@@ -1,0 +1,14 @@
+POST http://localhost:3000/api/todos
+Content-Type: application/json
+
+{
+    "user": "hussein",
+    "todo": {
+        "title": "todo12a",
+        "body": "blabla"
+    }
+}
+
+###
+
+GET http://localhost:3000/api/todos?username=hussein

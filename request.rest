@@ -12,3 +12,25 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3000/api/todos?username=hussein
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlZTVlYjE5ODdhYjY2MzcyY2I1ZTE5ZiIsImlhdCI6MTU5MjI1NTM0NX0.EIrjN4t1XW40IgZ-qWb-cyTzXzenhBf7UPvtw3p6mks
+
+###
+
+POST http://localhost:3000/api/users/signup
+Content-Type: application/json
+
+{
+    "username": "hussein2",
+    "email": "hussein2@yahoo.com",
+    "password": "password"
+}
+
+###
+
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+
+{
+    "email": "hussein@yahoo.com",
+    "password": "password"
+}

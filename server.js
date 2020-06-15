@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const connectDB = require("./config/db");
 const todoRouter = require("./todos/todo.router");
+const { authRouter, protect } = require("./user/user.auth");
 
 // loading env variables from .env configs
 dotenv.config({ path: "./config/config.env" });
@@ -20,10 +21,11 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Auth middleware
+app.use("/api/users", authRouter);
+app.use(protect);
 
 // REST APIs Routers
 app.use("/api/todos", todoRouter);
-
 // production setup with static files
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));

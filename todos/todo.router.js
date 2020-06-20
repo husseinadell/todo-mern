@@ -1,31 +1,15 @@
-const express = require("express");
-// const { route } = require("../todos");
+const { Router } = require("express");
+const controllers = require("./todo.controllers");
+const router = Router();
 
-const router = express.Router();
+// /api/todo
+router.route("/").get(controllers.getMany).post(controllers.createOne);
 
-// temp data to mimic database
-const todos = {};
-
+// /api/todo/:id
 router
-  .route("/")
-  .get((req, res) => {
-    console.log(req.query);
-    res.send({ data: todos[req.query.username] });
-  })
-  .post((req, res) => {
-    const userTodos = todos[req.body.user];
-    const todo = {
-      title: req.body.todo.title,
-      body: req.body.todo.body,
-    };
-    if (userTodos) {
-      todos[req.body.user].push(todo);
-    } else {
-      todos[req.body.user] = [todo];
-    }
-    res.status(201).send({ data: todo });
-  });
-
-router.route("/:id").get().put().delete();
+  .route("/:id")
+  .get(controllers.getOne)
+  .put(controllers.updateOne)
+  .delete(controllers.removeOne);
 
 module.exports = router;

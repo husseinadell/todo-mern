@@ -9,6 +9,14 @@ const newToken = (user) => {
   return jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET);
 };
 
+const verifyToken = (token) =>
+  new Promise((resolve, reject) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, payload) => {
+      if (err) return reject(err);
+      resolve(payload);
+    });
+  });
+
 authRouter.route("/signup").post(async (req, res) => {
   console.log(req.body);
   if (!req.body.username || !req.body.password || !req.body.email) {
@@ -53,21 +61,36 @@ authRouter.route("/login").post(async (req, res) => {
   }
 });
 
-const protect = (req, res, next) => {
-  if (!req.headers.authorization) {
+const protect = async (req, res, next) => {
+  console.log("Here");
+  const bearer = req.headers.authorization;
+
+  if (!bearer || !bearer.startsWith("Bearer ")) {
+    console.error("errr");
     return res.status(401).end();
   }
-  let token = req.headers.authorization.split("Bearer ")[1];
-  if (!token) {
+
+  const token = req.headers.authorization.split("Bearer ")[1].trim();
+  let payload;
+  try {
+    payload = await verifyToken(token);
+  } catch (error) {
+    console.error(error);
     return res.status(401).end();
   }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (error, user) => {
-    if (error) return res.sendStatus(403);
-    // TODO: get user to avoid fake tokens.
-    req.user = user;
-    // console.log("[USER]", user);
-    next();
-  });
+
+  const user = await User.findById(payload.id)
+    .select("-password")
+    .lean()
+    .exec();
+
+  if (!user) {
+    console.error("No user");
+    return res.status(401).end();
+  }
+  req.user = user;
+  console.log("[USER]", user);
+  next();
 };
 
 module.exports = { authRouter, protect };
